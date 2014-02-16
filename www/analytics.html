@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+        <title>SAP Workflow POC</title>
+        <script src="js/jquery-1.10.2.min.js"></script>
+        <script src="js/jquery.mobile-1.3.2.min.js"></script>
+			<script src="js/highcharts.js"></script>
+			
+	 </head>
+    <body>
+	
+	<div data-role="page" id="main-page" class="my-page">
+
+	<div data-role="header">
+		<h1>New Order</h1>
+		   	<a href="#back" data-role="button" data-rel="back" data-icon="arrow-l" data-iconpos="notext" data-inline="true" data-transition="fade">Back</a>
+				<a href="#settings" data-icon="gear">Settings </a>
+		
+		
+	</div><!-- /header -->
+
+	<div data-role="content">	
+	<div data-role="fieldcontain">
+   	<label for="name">Route Number:&nbsp;&nbsp;&nbsp; </label>
+    	<input type="text" name="route" id="route" value=""  />
+	</div>	
+					
+	</div><!-- /content -->
+	
+	<div data-role="footer" data-position="fixed" visible="false">
+		<small id="status">&nbsp;</small> 
+	</div><!-- /footer -->
+	
+        <div data-role="panel" data-position="right" id="settings" data-theme="b" class="jqm-nav-panel">
+
+        <form class="userform">
+            <h2>Save User Details</h2>
+            <label for="username">User Name</label>
+            <input type="text" name="username" id="username" data-mini="true">
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" autocomplete="off" data-mini="true">
+
+            <div class="ui-grid-a">
+                <div class="ui-block-a"><a href="#" data-rel="close" data-role="button" data-theme="c" data-mini="true">Cancel</a></div>
+                <div class="ui-block-b"><a href="#" data-rel="close" data-role="button" data-theme="b" data-mini="true" onClick="saveUser()">Save</a></div>
+            </div>
+        </form>
+
+        </div><!-- /panel -->
+	
+	</div><!-- /page -->
+
+
+        <script type="text/javascript" src="phonegap.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+		  <link rel="stylesheet"  href="css/jquery.mobile-1.3.2.min.css">
+		  <link rel="stylesheet"  href="css/grid-listview.css">
+        <script type="text/javascript" src="js/datajs-1.1.1.js"></script>
+
+
+    </body>
+</html>

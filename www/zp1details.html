@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>SAP Workflow POC</title>
+        <script type="text/javascript" src="phonegap.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+	<link rel="stylesheet"  href="css/jquery.mobile-1.3.2.min.css">
+        <script type="text/javascript" src="js/datajs-1.1.1.js"></script>
+        <script src="js/jquery-1.10.2.min.js"></script>
+        <script src="js/jquery.mobile-1.3.2.min.js"></script>
+	<script>
+                function getUser(){
+                                var storage = localStorage;
+                                return storage.getItem("username");
+                        }
+                function getPass(){
+                                var storage = localStorage;
+                                return storage.getItem("password");
+                        }
+	
+	</script>
+
+    </head>
+    <body>
+	<div data-role="page" id="zp1-details-page">
+		<script type="text/javascript" charset="utf-8">
+		$( "#poheader" ).bind('expand',function () {
+			getPOItems(sessionStorage.getItem("ponumber"));
+		});
+		</script>
+		 <script type="text/javascript" charset="utf-8">
+			function moreDetails(value,scheme_id,scheme_agency_id){
+                                var myurl="http://nplhost.sat-infotech.com:8042/sap/opu/sdata/sap/wfdecisiontaskprocessing/";
+                                var sUrl = myurl + "WorkflowTaskCollection(value='"+value+"',scheme_id='"+scheme_id+"',scheme_agency_id='"+scheme_agency_id+"')/RelatedObjects";
+                                var storage = localStorage;
+                                var strUsername=storage.getItem("username");
+                                var strPassword=storage.getItem("password");
+                                var oHeaders = {};
+                                var obj ={};
+                                oHeaders['Authorization'] = "Basic " + btoa(strUsername + ":" + strPassword);
+                                var request = {
+                                        headers : oHeaders, // object that contains HTTP headers as name value pairs
+                                        requestUri : sUrl, // OData endpoint URI
+                                        method : "GET"
+                                };
+                                OData.read(request,
+                                function (data) {
+					$('#object_id').html(data.results[0].object_id);
+					sessionStorage.setItem("ponumber",data.results[0].object_id);
+					getPOHeader(data.results[0].object_id);
+                                }, function(err){
+                                        alert(JSON.stringify(data));
+                                });
+				var htmlstr = '<a data-role="button" data-inline="true" data-theme="a" data-icon="delete" data-mini="true" id="reject-button-'+value+'" onClick=\'decideObject("'+value+'","'+scheme_id+'","'+scheme_agency_id+'","0002")\'>Reject</a><a data-role="button" data-icon="check" data-inline="true" data-mini="true" data-theme="b" id="accept-button-'+value+'" onClick=\'decideObject("'+value+'","'+scheme_id+'","'+scheme_agency_id+'","0001")\'>Approve</a>'
+				$('#a_r_buttons').html(htmlstr);
+				var button_reject = "#reject-button-"+value;
+                                var button_accept = "#accept-button-"+value;
+                                var button_more = "#more-button-"+value;
+                                $(button_reject).buttonMarkup();
+                                $(button_accept).buttonMarkup();
+                                $(button_more).buttonMarkup();
+
+                        }
+
+		        function decideObject(value,scheme_id,scheme_agency_id,dec_key){
+                                var myurl="http://nplhost.sat-infotech.com:8042/sap/opu/sdata/sap/wfdecisiontaskprocessing/";
+                                var sUrl = myurl + "DecisionOption_ApplyDecision?value="+value+"&scheme_id="+scheme_id+"&scheme_agency_id="+scheme_agency_id+"&dec_key="+dec_key;
+                                var storage = localStorage;
+                                var strUsername=storage.getItem("username");
+                                var strPassword=storage.getItem("password");
+                                $.ajax({
+                                  url: sUrl,
+                                  type: 'GET',
+                                  username: strUsername,
+                                  password: strPassword,
+                                  error : function (request,error){ alert(JSON.stringify(request)); }, 
+                                  success: function (data) {
+                                        if(dec_key=="0002"){
+                                                alert("Work Item Rejected");
+                                        }
+                                        if(dec_key=="0001"){
+                                                alert("Work Item Accepted");
+                                        }
+					location.reload();
+                                  }
+                                  });
+                        }
+	
+			function getPOHeader(ponumber){
+                                var myurl="http://nplhost.sat-infotech.com:8042/sap/opu/odata/sap/Z_PURCHASE_TEST/";
+                                var sUrl = myurl + "POHeaders('"+ponumber+"')";
+                                var storage = localStorage;
+                                var strUsername=storage.getItem("username");
+                                var strPassword=storage.getItem("password");
+                                var oHeaders = {};
+                                var obj ={};
+                                oHeaders['Authorization'] = "Basic " + btoa(strUsername + ":" + strPassword);
+                                var request = {
+                                        headers : oHeaders, // object that contains HTTP headers as name value pairs
+                                        requestUri : sUrl, // OData endpoint URI
+                                        method : "GET"
+                                };
+                                OData.read(request,
+                                function (data) {
+					value = data.CreateDate;
+					if (value.substring(0, 6) == "/Date(")
+ 					{
+					   var dt = new Date(parseInt(value.substring(6, value.length - 2)));
+					   var dtString = (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+ 					}
+					$("#po_date").html(dtString);
+					$("#po_vendor").html(data.VendorName);
+					$("#po_value").html(data.Value);
+                                }, function(err){
+                                        alert(JSON.stringify(data));
+                                });
+
+			}
+			
+			function getPOItems(ponumber){
+                                var myurl="http://nplhost.sat-infotech.com:8042/sap/opu/odata/sap/Z_PURCHASE_TEST/";
+                                var sUrl = myurl + "POHeaders('"+ponumber+"')/POItems";
+                                var storage = localStorage;
+                                var strUsername=storage.getItem("username");
+                                var strPassword=storage.getItem("password");
+                                var oHeaders = {};
+                                var obj ={};
+                                oHeaders['Authorization'] = "Basic " + btoa(strUsername + ":" + strPassword);
+                                var request = {
+                                        headers : oHeaders, // object that contains HTTP headers as name value pairs
+                                        requestUri : sUrl, // OData endpoint URI
+                                        method : "GET"
+                                };
+                                OData.read(request,
+                                function (data) {
+					htmlstr='<table data-role="table" id="movie-table" data-mode="reflow" class="ui-responsive table-stroke"><thead><th>Number</th><th>Description</th><th>Quantity</th></tr></thead><tbody>';
+					for(i=0;i<data.results.length;i++){
+						htmlstr = htmlstr + "<tr><th>"+data.results[i].Item+"</th><td>"+data.results[i].Description+"</td><td>"+data.results[i].Quantity+"</td></tr>";
+					}
+					htmlstr = htmlstr +"</tbody></table>";
+					$('#podetails').html(htmlstr);
+                                }, function(err){
+                                        alert(JSON.stringify(data));
+                                });
+
+			}
+
+                        $(document).on("pageinit","#zp1-details-page", function() {
+                        var storage=sessionStorage;
+                        $.support.cors = true;
+                        $.mobile.allowCrossDomainPages = true;
+                        $("#zp1item").html(storage.getItem("zp1item"));
+			moreDetails(storage.getItem("zp1item"),storage.getItem("scheme_id"),storage.getItem("scheme_agency_id"));
+                });
+	</script>
+	<div data-role="header">
+		<h1><span id="zp1item"></span></h1>
+		<a href="/index.html#zp1-page" data-icon="arrow-l" >Back</a>
+	</div><!-- /header -->
+
+	<div data-role="content" >	
+		<div data-role="collapsible" data-theme="c" data-content-theme="b" data-iconpos="right" id="poheader">
+		<h3>
+		<p><b>PO Number : </b> <span id="object_id"></span>
+		<p><b>PO Date : </b> <span id="po_date"></span>
+		<p><b>PO Vendor : </b> <span id="po_vendor"></span>
+		<p><b>PO Value : </b> <span id="po_value"></span>
+		</h3>
+		<h2>Item Details</h2>
+		<span id="podetails">&nbsp;</span>
+	</div><!-- /content -->
+	<span id="a_r_buttons"></span>
+	
+	<div data-role="footer" data-position="fixed" visible="false">
+		<small id="status">&nbsp;</small> 
+	</div><!-- /footer -->
+	
+	</div><!-- /page -->
+
+
+
+    </body>
+</html>

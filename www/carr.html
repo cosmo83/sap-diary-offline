@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<!DOCTYPE html> 
+<html> 
+<head> 
+	<title>Page Title</title> 
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+
+	<link rel="stylesheet" href="css/jquery.mobile-1.2.1.min.css" />
+	<script src="phonegap.js"></script>
+	<script src="js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="js/datajs-1.1.1.js"></script>                                                                                                   
+	<script src="js/jquery.mobile-1.2.1.min.js"></script>
+
+	<script type="text/javascript" charset="utf-8">
+		function fillDetails(id){                                                                                                                                        
+			alert(id);
+                        }
+
+	</script>
+
+</head> 
+<body> 
+
+<div data-role="page" id="carr">
+	<script type="text/javascript" charset="utf-8">
+			$(document).on('pageinit',"#carr",function(event){
+						var storage=sessionStorage;
+						$.support.cors = true;
+		                                $.mobile.allowCrossDomainPages = true;
+						$('p#loading-div').html(storage.getItem("id"));
+			});
+       </script>
+	<div data-role="header">
+		<h1>Carrier Details </h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<p id="loading-div">Loading ....</p>		
+	</div><!-- /content -->
+
+	<div data-role="footer">
+		<h4>SAT Infotech Pvt Ltd.</h4>
+	</div><!-- /footer -->
+</div><!-- /page -->
+
+</body>
+</html>
