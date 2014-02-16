@@ -169,7 +169,7 @@
 									request.onload = function () {
    										var status = request.status; // HTTP response status, e.g., 200 for "200 OK"
    										var data = request.responseText; 
-											
+											alert(data);
    										if(status == 201){
 	   										var xml = $.parseXML(data),
   												$xml = $( xml ),
