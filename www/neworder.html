@@ -7,7 +7,7 @@
         <title>SAP Diary</title>
         <script src="js/jquery-1.10.2.min.js"></script>
         <script src="js/jquery.mobile-1.3.2.min.js"></script>
-			<script src="js/highcharts.js"></script>
+		
 			<script type="text/javascript" >
  								
 					
@@ -169,7 +169,7 @@
 									request.onload = function () {
    										var status = request.status; // HTTP response status, e.g., 200 for "200 OK"
    										var data = request.responseText; 
-											alert(data);
+											//alert(data);
 											
    										if(status == 201){
 	   										var xml = $.parseXML(data),
@@ -177,7 +177,7 @@
  												 $test = $xml.find('OrderId');
  											
 												alert("Sales Order Created : "+$test.text());
-												$.mobile.changePage( "index.html", { transition: "flip", changeHash: false });   										
+												parent.history.back();   										
    										}
    										//console.log(data);
 									}
@@ -256,7 +256,7 @@
 												orderlines.push(orderline);
 												qtyfield = "qty-"+i;
 												html = html + "<tr>\n";								
-												html = html + "<td>"+data.results[i].MATERIAL+"</td><td>"+data.results[i].DESCRIPTION+"</td><td>"+data.results[i].UITOFMEASURE+"</td><td><input type='number' data-mini='true' id='"+qtyfield+"'></td>\n";
+												html = html + "<td>"+data.results[i].DESCRIPTION+"</td><td>"+data.results[i].UITOFMEASURE+"</td><td><input type='number' data-mini='true' id='"+qtyfield+"'></td>\n";
 												html = html + "</tr>\n";
                               			
 											}
