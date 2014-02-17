@@ -84,3 +84,81 @@ function xmlToJson(xml) {
 	}
 	return obj;
 };
+
+							function getUOM(uom){
+									if(uom == "HLT"){
+											return "HL";
+									}
+									if(uom == "LTR"){
+											return "L";
+									}
+									return "ML";
+								}
+
+								function getData(){
+						
+                  
+                                OData.defaultHttpClient.enableJsonpCallback = false;
+                                var myurl="http://hana.sat-infotech.com:8001/sap/opu/odata/sap/ZCUSTOMER_SERVICE/";
+                                var storage = localStorage;
+                                var strUsername=storage.getItem("username");
+                                var strPassword=storage.getItem("password");
+                                var sUrl = myurl+"CUSTOMERCollection";
+                                var oHeaders = {};
+                                oHeaders['Authorization'] = "Basic " + btoa(strUsername + ":" + strPassword);
+                                oHeaders['X-Requested-With'] ="XMLHttpRequest";
+                                oHeaders['Content-Type'] ="application/atom+xml";
+										  oHeaders['X-CSRF-Token'] ="Fetch";
+                                                                
+                              
+                                var request = {
+                                        headers : oHeaders, // object that contains HTTP headers as name value pairs
+                                        requestUri : sUrl, // OData endpoint URI
+                                        method : "GET"
+                                };
+                                
+                                OData.read(request,
+                                function (data,response) {
+                                			sessionStorage.setItem("CSRF", response.headers['x-csrf-token']);
+                                			var j=0;
+                                			//alert(JSON.stringify(data));
+                                			$('#select-customer').empty();
+													var result=null;                                			
+                                			                                			
+                                        for (var i=0;i<data.results.length;i++){
+													                            	
+                                        	if(data.results[i].TRANSPORTATIONZONE == $('input:text[name=route]').val()){
+                                        	j++;
+                                        	if(j==1){
+                                        		result = data.results[i].CustomerNumber;
+                                        	}                                         	
+                                        	$('#select-customer').append($('<option>', {
+    														value: data.results[i].CustomerNumber,
+    														text: data.results[i].name,
+   
+														}));
+														
+													}
+													}
+													if(j==0){
+														alert("No Customers in Transport Zone");													
+													}										                      
+     												$("#select-customer").val(result).selectmenu('refresh', true);
+     												                  
+                                  }
+					
+                               , function (err) {
+                                        alert(JSON.stringify(err));
+
+                                });
+                        }
+								function zeroPad(num, numZeros) {
+									var n = Math.abs(num);
+									var zeros = Math.max(0, numZeros - Math.floor(n).toString().length );
+									var zeroString = Math.pow(10,zeros).toString().substr(1);
+									if( num < 0 ) {
+										zeroString = '-' + zeroString;
+									}
+									return zeroString+n;
+								}
+
