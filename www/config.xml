@@ -24,6 +24,6 @@
     <preference name="android-minSdkVersion" value="7" />
     <preference name="android-installLocation" value="auto" />
     <icon src="icon.png" />
-    <gap:splash src="splash.png" />
+    <gap:splash src="splash.png"  width="320" height="480" />
     <access origin="*" />
 </widget>
