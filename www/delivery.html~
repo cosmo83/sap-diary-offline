@@ -1,0 +1,260 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+        <title>SAP Diary</title>
+        <script src="js/jquery-1.10.2.min.js"></script>
+        <script src="js/jquery.mobile-1.3.2.min.js"></script>
+		
+			<script type="text/javascript" >
+ 								
+					
+		</script>
+			
+	 </head>
+    <body>
+	
+	<div data-role="page" id="main-page" class="my-page">
+
+	<div data-role="header">
+		<h1>Deliveries</h1>
+		   	<a href="#back" data-role="button" data-rel="back" data-icon="arrow-l" data-iconpos="notext" data-inline="true" data-transition="fade">Back</a>
+				<a href="#settings" data-icon="gear">Settings </a>
+		
+		
+	</div><!-- /header -->
+
+	<div data-role="content">
+	<!--	
+	<div data-role="fieldcontain">
+   	<label for="name">Route Number:&nbsp;&nbsp;&nbsp; </label>
+    	<input type="text" name="route" id="route" value=""  />
+    
+	</div>
+	-->
+	<div  data-theme="a" class="ui-bar ui-grid-b">
+				<div class="ui-block-a"><h3 style="margin-top:10px;">Route Number:</h3></div>
+				<div class="ui-block-b"><input type="text" name="route" id="route" value=""  data-mini="true"/> </div>	 
+				<div class="ui-block-c"><div style="margin:6px 0 0 10px;"><button data-theme="b" id="myButton" data-mini="true">Get Customers</button></div>
+				</div>  
+	</div>
+	
+	<div  data-theme="a" class="ui-bar ui-grid-b">
+				<div class="ui-block-a"><h3 style="margin-top:10px;">Customer:</h3></div>
+				<div class="ui-block-b"> <select name="select-customer" id="select-customer" data-mini="true"></select></div>	 
+				<div class="ui-block-c"><div style="margin:6px 0 0 10px;"><button data-theme="b" id="myButton2" data-mini="true">Get Deliveries</button></div>
+				</div>  
+	</div>
+		
+		<div data-role="collapsible-set"  data-content-theme="d" id="deliverydetails">
+		
+		</div>
+		
+	</div><!-- /content -->
+	
+	<div data-role="footer" data-position="fixed" visible="false">
+		<small id="status">&nbsp;</small> 
+	</div><!-- /footer -->
+	
+        <div data-role="panel" data-position="right" id="settings" data-theme="b" class="jqm-nav-panel">
+
+        <form class="userform">
+            <h2>Save User Details</h2>
+            <label for="username">User Name</label>
+            <input type="text" name="username" id="username" data-mini="true">
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" autocomplete="off" data-mini="true">
+
+            <div class="ui-grid-a">
+                <div class="ui-block-a"><a href="#" data-rel="close" data-role="button" data-theme="c" data-mini="true">Cancel</a></div>
+                <div class="ui-block-b"><a href="#" data-rel="close" data-role="button" data-theme="b" data-mini="true" onClick="saveUser()">Save</a></div>
+            </div>
+        </form>
+
+        </div><!-- /panel -->
+	
+	</div><!-- /page -->
+
+
+        <script type="text/javascript" src="phonegap.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+		  <link rel="stylesheet"  href="css/jquery.mobile-1.3.2.min.css">
+		  <link rel="stylesheet"  href="css/grid-listview.css">
+        <script type="text/javascript" src="js/datajs-1.1.1.js"></script>
+				<script type="text/javascript">
+									$(document).on('click','#myButton',function(){
+									if($('input:text[name=route]').val() ==''){
+									alert("No Route Given")
+									}else{
+        							getData();
+        							}
+   							 });
+								function createAtomFeed(deliverynum){
+								var atomfeed='';
+									atomfeed = atomfeed+'<?xml version="1.0" encoding="UTF-8"?>\n';
+									atomfeed = atomfeed+'<atom:entry\n';
+									atomfeed = atomfeed+'\txmlns:atom="http://www.w3.org/2005/Atom"\n';
+									atomfeed = atomfeed+'\txmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"\n';
+									atomfeed = atomfeed+'\txmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">\n';
+									atomfeed = atomfeed+'\t<atom:content type="application/xml">\n';
+									atomfeed = atomfeed+'\t\t<m:properties>\n';
+									atomfeed = atomfeed+'\t\t\t<d:DocumentNumber>'+deliverynum+'</d:DocumentNumber>\n';
+									atomfeed = atomfeed+'\t\t</m:properties>\n';
+									atomfeed = atomfeed+'\t</atom:content>\n';
+									atomfeed = atomfeed+'</atom:entry>\n';
+									return atomfeed;
+								}
+								function processDelivery(deliverynum){
+											
+									var atomfeed = createAtomFeed(deliverynum);
+									//alert(sessionStorage.getItem("CSRF"));
+									var url = "http://hana.sat-infotech.com:8001/sap/opu/odata/sap/ZDELIVERY_ITEM_SERVICE/DELIVERYITEMSCollection";
+									var method = "POST";
+									var async = true;
+									var storage = localStorage;
+									var strUsername=storage.getItem("username");
+                           var strPassword=storage.getItem("password");
+									var request = new XMLHttpRequest();
+									request.onload = function () {
+   										var status = request.status; // HTTP response status, e.g., 200 for "200 OK"
+   										var data = request.responseText; 
+											//alert(data);
+											
+   										if(status == 201){
+											alert("Delivery Completed");
+												parent.history.back();   										
+   										}
+   										
+									}
+									request.open(method, url, async);
+									request.setRequestHeader("Content-Type", "application/atom+xml");									
+									request.setRequestHeader("Authorization", "Basic " + btoa(strUsername + ":" + strPassword));
+									request.setRequestHeader("X-CSRF-Token", sessionStorage.getItem("CSRF"));
+									request.send(atomfeed);		
+								
+								}								
+								
+								$(document).on('click','.deliveredb',function(){
+										 processDelivery($(this).attr('id')); 
+									});
+								var deliveries;
+
+								function deliveryExists(deliveryn){
+									
+									for(i=0;i<deliveries.length;i++){
+										
+											console.log(deliveries[i]['deliverynum'] + " "+ deliveryn+" " +deliveries.length);
+											if(deliveries[i]['deliverynum']==deliveryn){
+												console.log(i);
+												return i;
+											}
+										
+									}
+									return -1;
+								}
+								
+								function printDeliveries(){
+											
+											if(deliveries.length == 0){
+												alert("No Pending Orders");
+											}else{
+											html = "";											
+											for(i=0;i<deliveries.length;i++){
+												html = html +'<div data-role="collapsible" id="collapse">';
+									         html = html+ '<h3>Delivery ID : '+ deliveries[i].deliverynum+' Customer ID : '+deliveries[i].custnum+'</h3>';
+									         html = html +'<p><table>';
+									         for(j=0;j<deliveries[i].deliverylines.length;j++){
+													html = html+'<tr><td>'+	deliveries[i].deliverylines[j].materialdesc+'</td><td>'+deliveries[i].deliverylines[j].uom+'</td><td>'+deliveries[i].deliverylines[j].quantity+'</td></tr>';								         
+									         }
+									         html = html+'</table>';
+									         html = html + '<center> <a href="#" data-role="button" data-inline="true" data-theme="b" id="'+ deliveries[i].deliverynum+ '" class="deliveredb" >Delivered</a></center></p>';
+        										html = html+'</div>';
+											
+											}
+											
+											$('#deliverydetails').empty().append(html).collapsibleset('refresh');
+											$('#deliverydetails').trigger('create');
+											
+											}
+											
+											
+								}								
+								
+   							 function getDeliveries(){
+									     OData.defaultHttpClient.enableJsonpCallback = false;
+                                var myurl="http://hana.sat-infotech.com:8001/sap/opu/odata/sap/ZDELIVERY_ITEM_SERVICE/";
+                                var storage = localStorage;
+                                var strUsername=storage.getItem("username");
+                                var strPassword=storage.getItem("password");
+                                var sUrl = myurl+"DELIVERYITEMSCollection";
+                                deliveries = new Array();
+                                var oHeaders = {};
+                                oHeaders['Authorization'] = "Basic " + btoa(strUsername + ":" + strPassword);
+                                oHeaders['X-Requested-With'] ="XMLHttpRequest";
+                                oHeaders['Content-Type'] ="application/atom+xml";
+										  oHeaders['X-CSRF-Token'] ="Fetch";
+                                var request = {
+                                        headers : oHeaders, // object that contains HTTP headers as name value pairs
+                                        requestUri : sUrl, // OData endpoint URI
+                                        method : "GET"
+                                };
+                                
+										
+                           	OData.read(request,
+                                function (data,response) {
+                                sessionStorage.setItem("CSRF", response.headers['x-csrf-token']);
+                                
+                                	var j=0;
+                                	html = "";
+									
+											for (var i=0;i<data.results.length;i++){
+											
+										
+											//console.log(data.results[i].customernumber+ " " + $('#select-customer option:selected').val() );			 											
+											if(data.results[i].customernumber == $('#select-customer option:selected').val()){
+ 												j++;
+ 												deliveriesline = deliveryExists(data.results[i].DocumentNumber);
+												if(deliveriesline < 0){
+													delivery = new Object();
+													delivery.deliverynum = data.results[i].DocumentNumber;
+													delivery.custnum = data.results[i].customernumber;
+													delivery.deliverylines = new Array();
+													deliveries.push(delivery);
+													deliveriesline = deliveries.length-1;																										
+												}
+												
+												
+												var deliveryline = new Object();
+												deliveryline.material = data.results[i].Material;
+												deliveryline.materialdesc = data.results[i].Description;
+												deliveryline.uom = data.results[i].Units;
+												deliveryline.quantity = data.results[i].Quantity;
+												
+																														
+												deliveries[deliveriesline].deliverylines.push(deliveryline);																																																																												
+										
+											}						
+											}		
+											
+																									  										
+											printDeliveries();
+									     }
+                                                               , function (err) {
+                                        alert(JSON.stringify(err));
+
+                                });
+
+								}
+								$(document).on('click','#myButton2',function(){
+									if($('#select-customer option:selected').val() ==undefined){
+									alert("No Customer Selected")
+									}else{
+									getDeliveries();
+        							}
+   							 });	
+   							 
+				</script>
+    </body>
+</html>
