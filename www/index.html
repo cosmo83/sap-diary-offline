@@ -17,26 +17,13 @@
                         $.mobile.allowCrossDomainPages = true;
                         $('#username').val(localStorage.username);
                         $('#password').val(localStorage.password);
+                        $('#route').val(localStorage.route);
                         
 					});
 					
 					
 
-					function saveUser(){
-                                var storage=localStorage;
-                                storage.clear();
-                                storage.setItem("username",$('#username').val());
-                                storage.setItem("password",$('#password').val());
-                                alert("User Details Saved");
-                        }
-                function getUser(){
-                                var storage = localStorage;
-                                return storage.getItem("username");
-                        }
-                function getPass(){
-                                var storage = localStorage;
-                                return storage.getItem("password");
-                        }
+					
 			</script>
 	 </head>
     <body>
@@ -72,6 +59,7 @@
                 <p>Business Anaytics</p>
                 <p class="ui-li-aside">Analytics</p>
             </a></li>
+            
             <!--<li><a href="procurement.html" data-transition="flip">
                 <img src="img/procurement.jpg">
                 <h2>Procurement</h2>
@@ -97,6 +85,10 @@
 
             <label for="password">Password:</label>
             <input type="password" name="password" id="password" autocomplete="off" data-mini="true">
+
+            <label for="route">Route:</label>
+            <input type="text" name="route" id="route" autocomplete="off" data-mini="true">
+
 
             <div class="ui-grid-a">
                 <div class="ui-block-a"><a href="#" data-rel="close" data-role="button" data-theme="c" data-mini="true">Cancel</a></div>

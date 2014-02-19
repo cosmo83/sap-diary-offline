@@ -162,3 +162,24 @@ function xmlToJson(xml) {
 									return zeroString+n;
 								}
 
+
+
+					function saveUser(){
+                                var storage=localStorage;
+                                storage.clear();
+                                storage.setItem("username",$('#username').val());
+                                storage.setItem("password",$('#password').val());
+                                storage.setItem("route",$('#route').val());
+                                alert("User Details Saved");
+                        }
+                function getUser(){
+                                var storage = localStorage;
+                                return storage.getItem("username");
+                        }
+                function getPass(){
+                                var storage = localStorage;
+                                return storage.getItem("password");
+                        }
+                function getRoute(){
+											return localStorage.getItem("route");                
+                }
