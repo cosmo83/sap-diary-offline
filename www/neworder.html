@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -13,9 +14,60 @@
 			
 			function onDeviceReady() {
         		var db = window.openDatabase("SATDiary", "1.0", "SAT Diary DB", 1000000);
-				alert("Database Opened");
-    		}		
-					
+        		db.transaction(populateDB,successCB,errorCB);
+				db.transaction(queryCustomer, errorCB);
+				
+    		}
+    		
+    		function populateDB(tx) {
+			    tx.executeSql('DROP TABLE IF EXISTS CUSTOMER');
+    			 tx.executeSql('CREATE TABLE IF NOT EXISTS CUSTOMER (cust_id unique, cust_name, route_num)');
+    			 tx.executeSql('INSERT INTO CUSTOMER (cust_id, cust_name,route_num) VALUES (1, "Tirumala Milk Parlor","500369")');
+    			 tx.executeSql('INSERT INTO CUSTOMER (cust_id, cust_name,route_num) VALUES (2, "Venkateswara Milk Parlor","500369")');
+    			 tx.executeSql('DROP TABLE IF EXISTS MATERIAL');
+    			 tx.executeSql('CREATE TABLE IF NOT EXISTS MATERIAL(mat_id unique, mat_nam, mat_uom)');
+    			 tx.executeSql('INSERT INTO MATERIAL(mat_id,mat_nam,mat_uom) VALUES(1,"Double Toned Milk - Half Liter","HLT")');
+    			 tx.executeSql('INSERT INTO MATERIAL(mat_id,mat_nam,mat_uom) VALUES(2,"Double Toned Milk - Liter","LT")');
+    			 tx.executeSql('INSERT INTO MATERIAL(mat_id,mat_nam,mat_uom) VALUES(3,"Toned Milk - Half Liter","HLT")');
+    			 tx.executeSql('INSERT INTO MATERIAL(mat_id,mat_nam,mat_uom) VALUES(4,"Toned Milk - Liter","LT")');
+    			 tx.executeSql('DROP TABLE IF EXISTS PROPOSALLINE');
+    			 tx.executeSql('CREATE TABLE IF NOT EXISTS PROPOSALLINE(prop_id, mat_id, qty)');
+			}
+			
+			function errorCB(err) {
+    				alert("Error processing SQL: "+err.code);
+			}
+			function successCB(err) {
+    				alert("Error processing SQL: "+err.code);
+			}
+			function querySuccess(tx,results) {
+    				var len = results.rows.length;
+					if(len ==0){
+						alert("No Customers in the given route number");					
+					}
+					else{
+							var result = null;
+							for (var i=0; i<len; i++){
+								if(i==0){
+                           		result = results.rows.item(i).cust_id;
+                       	}  
+								$('#select-customer').append($('<option>', {
+    														value: results.rows.item(i).cust_id,
+    														text: results.rows.item(i).cust_name,
+   
+														}));
+				            
+        				  	}		
+							$("#select-customer").val(result).selectmenu('refresh', true);
+					}
+			}
+			
+			
+			function queryCustomer(tx){
+				routev = localStorage.getItem("route");
+				tx.executeSql('SELECT * from CUSTOMER where route_num=?',[routev],querySuccess, errorCB);
+			}		
+			
 		</script>
 			
 	 </head>
